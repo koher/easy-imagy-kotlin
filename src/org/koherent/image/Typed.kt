@@ -3,7 +3,6 @@ package org.koherent.image
 import org.koherent.image.ConvolutionType.*
 
 sealed class ConvolutionType<I, W, O> {
-    object BBI : ConvolutionType<Byte, Byte, Int>()
     object BII : ConvolutionType<Byte, Int, Int>()
     object BFB : ConvolutionType<Byte, Float, Byte>()
     object BDB : ConvolutionType<Byte, Double, Byte>()
@@ -13,17 +12,6 @@ sealed class ConvolutionType<I, W, O> {
     object FFF : ConvolutionType<Float, Float, Float>()
     object FDF : ConvolutionType<Float, Double, Float>()
     object DDD : ConvolutionType<Double, Double, Double>()
-}
-
-fun Image<Byte>.convoluted(kernel: Image<Byte>, extrapolation: Extrapolation<Byte>, type: BBI = BBI): Image<Int> {
-    return convoluted<Byte, Byte, Int, Int>(
-            kernel,
-            extrapolation,
-            { a, b -> (a.toInt() and 0xff) * (b.toInt() and 0xff) },
-            0,
-            { a, b -> a + b },
-            { it }
-    )
 }
 
 fun Image<Byte>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<Byte>, type: BII = BII): Image<Int> {
