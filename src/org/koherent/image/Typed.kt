@@ -3,37 +3,37 @@ package org.koherent.image
 import org.koherent.image.ConvolutionType.*
 
 sealed class ConvolutionType<I, W, O> {
-    object BBB: ConvolutionType<Byte, Byte, Byte>()
-    object BIB: ConvolutionType<Byte, Int, Byte>()
-    object BFB: ConvolutionType<Byte, Float, Byte>()
-    object BDB: ConvolutionType<Byte, Double, Byte>()
-    object III: ConvolutionType<Int, Int, Int>()
-    object IFI: ConvolutionType<Int, Float, Int>()
-    object IDI: ConvolutionType<Int, Double, Int>()
-    object FFF: ConvolutionType<Float, Float, Float>()
-    object FDF: ConvolutionType<Float, Double, Float>()
-    object DDD: ConvolutionType<Double, Double, Double>()
+    object BBI : ConvolutionType<Byte, Byte, Int>()
+    object BII : ConvolutionType<Byte, Int, Int>()
+    object BFB : ConvolutionType<Byte, Float, Byte>()
+    object BDB : ConvolutionType<Byte, Double, Byte>()
+    object III : ConvolutionType<Int, Int, Int>()
+    object IFI : ConvolutionType<Int, Float, Int>()
+    object IDI : ConvolutionType<Int, Double, Int>()
+    object FFF : ConvolutionType<Float, Float, Float>()
+    object FDF : ConvolutionType<Float, Double, Float>()
+    object DDD : ConvolutionType<Double, Double, Double>()
 }
 
-fun Image<Byte>.convoluted(kernel: Image<Byte>, extrapolation: Extrapolation<Byte>, type: BBB = BBB): Image<Byte> {
-    return convoluted<Byte, Byte, Int, Byte>(
+fun Image<Byte>.convoluted(kernel: Image<Byte>, extrapolation: Extrapolation<Byte>, type: BBI = BBI): Image<Int> {
+    return convoluted<Byte, Byte, Int, Int>(
             kernel,
             extrapolation,
             { a, b -> (a.toInt() and 0xff) * (b.toInt() and 0xff) },
             0,
             { a, b -> a + b },
-            { it.toByte() }
+            { it }
     )
 }
 
-fun Image<Byte>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<Byte>, type: BIB = BIB): Image<Byte> {
-    return convoluted<Byte, Int, Int, Byte>(
+fun Image<Byte>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<Byte>, type: BII = BII): Image<Int> {
+    return convoluted<Byte, Int, Int, Int>(
             kernel,
             extrapolation,
             { a, b -> (a.toInt() and 0xff) * b },
             0,
             { a, b -> a + b },
-            { it.toByte() }
+            { it }
     )
 }
 
