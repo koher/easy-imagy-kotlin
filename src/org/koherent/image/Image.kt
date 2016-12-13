@@ -1,5 +1,7 @@
 package org.koherent.image
 
+import java.util.*
+
 class Image<Pixel>(val width: Int, val height: Int, val pixels: Array<Pixel>) : Iterable<Pixel> {
     @Suppress("NOTHING_TO_INLINE")
     internal inline fun isValidX(x: Int): Boolean {
@@ -24,7 +26,7 @@ class Image<Pixel>(val width: Int, val height: Int, val pixels: Array<Pixel>) : 
     }
 
     operator fun get(x: Int, y: Int): Pixel {
-        return pixels[safePixelIndex(y, x)]
+        return pixels[safePixelIndex(x, y)]
     }
 
     operator fun set(x: Int, y: Int, pixel: Pixel) {
@@ -37,6 +39,13 @@ class Image<Pixel>(val width: Int, val height: Int, val pixels: Array<Pixel>) : 
         return pixels[pixelIndex(x, y)]
     }
 
+    fun pixel(x: Int, y: Int, extrapolation: Extrapolation<Pixel>): Pixel {
+        return pixel(x, y) ?: when (extrapolation) {
+            is Extrapolation.Constant -> extrapolation.value
+            is Extrapolation.Replicate -> this[clamp(x, 0, width), clamp(y, 0, height)]
+        }
+    }
+
     val size: Int
         get() = width * height
 
@@ -47,9 +56,7 @@ class Image<Pixel>(val width: Int, val height: Int, val pixels: Array<Pixel>) : 
     override fun equals(other: Any?): Boolean {
         val image = other as? Image<*>
         image ?: return false
-        if (width != image.width || height != image.height) return false
-        pixels.zip(image.pixels) { a, b -> if (a != b)  return false }
-        return true
+        return width == image.width && height == image.height && Arrays.equals(pixels, image.pixels)
     }
 
     override fun hashCode(): Int {
@@ -77,51 +84,43 @@ inline fun <Pixel> Image<Pixel>.update(transform: (Pixel) -> Pixel) {
     }
 }
 
-inline fun <Pixel, W, reified T> Image<Pixel>.convoluted(kernel: Image<W>, multiply: (Pixel, W) -> T, zero: T, add: (T, T) -> T, divide: (T, Int) -> T): Image<T> {
-    assert(kernel.width % 2 == 1) { "The `width` of the `kernel` must be odd: ${kernel.width}" }
-    assert(kernel.height % 2 == 1) { "The `height` of the `kernel` must be odd: ${kernel.height}" }
+inline fun <Pixel, W, T, reified R> Image<Pixel>.convoluted(kernel: Image<W>, extrapolation: Extrapolation<Pixel>, multiply: (Pixel, W) -> T, zero: T, add: (T, T) -> T, convert: (T) -> R): Image<R> {
+    assert(kernel.width > 0) { "The `width` of the `kernel` must be positive: ${kernel.width}" }
+    assert(kernel.height > 0) { "The `height` of the `kernel` must be positive: ${kernel.height}" }
 
     val hw = kernel.width / 2  // halfWidth
     val hh = kernel.height / 2 // halfHeight
 
-    val pixels = mutableListOf<T>()
+    val pixels = mutableListOf<R>()
 
-    for (y in 0..height) {
-        for (x in 0..width) {
+    for (y in 0 until height) {
+        for (x in 0 until width) {
             var sum = zero
-            var count = 0
-            for (fy in 0..kernel.height) {
-                for (fx in 0..kernel.width) {
+            for (fy in 0 until kernel.height) {
+                for (fx in 0 until kernel.width) {
                     val dx = fx - hw
                     val dy = fy - hh
 
-                    val x2 = x + dx
-                    val y2 = y + dy
-
-                    if (x2 < 0 || width <= x2) continue
-                    if (y2 < 0 || height <= y2) continue
-
                     val weight = kernel[fx, fy]
-                    val value = this.pixels[y2 * width + x2]
+                    val value = pixel(x + dx, y + dy, extrapolation)
 
                     sum = add(sum, multiply(value, weight))
-                    count++
                 }
             }
-            pixels.add(divide(sum, count))
+            pixels.add(convert(sum))
         }
     }
 
-    return Image<T>(width, height, pixels.toTypedArray())
+    return Image(width, height, pixels.toTypedArray())
 }
 
 inline fun <reified Pixel> Image<Pixel>.xFlipped(): Image<Pixel> {
     val pixels = mutableListOf<Pixel>()
 
     val  maxX = width - 1
-    for (y in 0..height) {
-        for (x in 0..width) {
-            pixels.add(this.pixels[y * width + (maxX - x)])
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            pixels.add(this[maxX - x, y])
         }
     }
 
@@ -132,9 +131,9 @@ inline fun <reified Pixel> Image<Pixel>.yFlipped(): Image<Pixel> {
     val pixels = mutableListOf<Pixel>()
 
     val  maxY = height - 1
-    for (y in 0..height) {
-        for (x in 0..width) {
-            pixels.add(this.pixels[(maxY - y) * width + x])
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            pixels.add(this[x, maxY - y])
         }
     }
 
@@ -150,9 +149,9 @@ inline fun <reified Pixel> Image<Pixel>.rotated(times: Int): Image<Pixel> {
             val pixels = mutableListOf<Pixel>()
 
             val maxX = height - 1
-            for (y in 0..width) {
-                for (x in 0..height) {
-                    pixels.add(this.pixels[(maxX - x) * width + y])
+            for (y in 0 until width) {
+                for (x in 0 until height) {
+                    pixels.add(this[y, maxX - x])
                 }
             }
 
@@ -163,9 +162,9 @@ inline fun <reified Pixel> Image<Pixel>.rotated(times: Int): Image<Pixel> {
 
             val  maxX = width - 1
             val  maxY = height - 1
-            for (y in 0..height) {
-                for (x in 0..width) {
-                    pixels.add(this.pixels[(maxY - y) * width + (maxX - x)])
+            for (y in 0 until height) {
+                for (x in 0 until width) {
+                    pixels.add(this[maxX - x, maxY - y])
                 }
             }
 
@@ -175,9 +174,9 @@ inline fun <reified Pixel> Image<Pixel>.rotated(times: Int): Image<Pixel> {
             val pixels = mutableListOf<Pixel>()
 
             val  maxY = height - 1
-            for (y in 0..width) {
-                for (x in 0..height) {
-                    pixels.add(this.pixels[x * width + (maxY - y)])
+            for (y in 0 until width) {
+                for (x in 0 until height) {
+                    pixels.add(this[maxY - y, x])
                 }
             }
 
@@ -185,4 +184,8 @@ inline fun <reified Pixel> Image<Pixel>.rotated(times: Int): Image<Pixel> {
         }
         else -> throw Error("Never reaches here.")
     }
+}
+
+private fun clamp(x: Int, min: Int, max: Int): Int {
+    return Math.max(Math.min(x, max), min)
 }
