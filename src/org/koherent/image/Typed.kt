@@ -41,7 +41,7 @@ fun Image<Byte>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<By
             { a, b -> (a.toInt() and 0xff) * b },
             0.0f,
             { a, b -> a + b },
-            { it.toByte() }
+            Float::toByte
     )
 }
 
@@ -52,7 +52,7 @@ fun Image<Byte>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<B
             { a, b -> (a.toInt() and 0xff) * b },
             0.0,
             { a, b -> a + b },
-            { it.toByte() }
+            Double::toByte
     )
 }
 
@@ -74,7 +74,7 @@ fun Image<Int>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<Int
             { a, b -> a * b },
             0.0f,
             { a, b -> a + b },
-            { it.toInt() }
+            Float::toInt
     )
 }
 
@@ -85,7 +85,7 @@ fun Image<Int>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<In
             { a, b -> a * b },
             0.0,
             { a, b -> a + b },
-            { it.toInt() }
+            Double::toInt
     )
 }
 
@@ -107,7 +107,7 @@ fun Image<Float>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<
             { a, b -> a * b },
             0.0,
             { a, b -> a + b },
-            { it.toFloat() }
+            Double::toFloat
     )
 }
 
