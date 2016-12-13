@@ -1,1 +1,5 @@
-# easy-imagy-kotlin
+# EasyImagy (for Kotlin)
+
+## License
+
+[The MIT License](LICENSE)
