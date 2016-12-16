@@ -1,6 +1,6 @@
 package org.koherent.image
 
-data class RGBA<Value>(val red: Value, val green: Value, val blue: Value, val alpha: Value) {
+data class RGBA<Value>(var red: Value, var green: Value, var blue: Value, var alpha: Value) {
     constructor(gray: Value, alpha: Value): this(gray, gray, gray, alpha)
 }
 
