@@ -73,4 +73,41 @@ class ImageAWTTest {
             assertEquals(image[1, 1].toInt() and 0xff, 170)
         }
     }
+
+    @Test
+    fun toBufferedImage() {
+        val image = Image<RGBA<Byte>>(2, 2, arrayOf<RGBA<Byte>>(
+                RGBA(0, 1, 2, 3),
+                RGBA(4, 5, 6, 7),
+                RGBA(126, 127, -128, -127),
+                RGBA(-4, -3, -2, -1)
+        ))
+
+        val bufferedImage = image.toBufferedImage()
+
+        bufferedImage.getRGB(0, 0).let {
+            assertEquals((it ushr 16) and 0xff, 0)
+            assertEquals((it ushr  8) and 0xff, 1)
+            assertEquals((it ushr  0) and 0xff, 2)
+            assertEquals((it ushr 24) and 0xff, 3)
+        }
+        bufferedImage.getRGB(1, 0).let {
+            assertEquals((it ushr 16) and 0xff, 4)
+            assertEquals((it ushr  8) and 0xff, 5)
+            assertEquals((it ushr  0) and 0xff, 6)
+            assertEquals((it ushr 24) and 0xff, 7)
+        }
+        bufferedImage.getRGB(0, 1).let {
+            assertEquals((it ushr 16) and 0xff, 126)
+            assertEquals((it ushr  8) and 0xff, 127)
+            assertEquals((it ushr  0) and 0xff, 128)
+            assertEquals((it ushr 24) and 0xff, 129)
+        }
+        bufferedImage.getRGB(1, 1).let {
+            assertEquals((it ushr 16) and 0xff, 252)
+            assertEquals((it ushr  8) and 0xff, 253)
+            assertEquals((it ushr  0) and 0xff, 254)
+            assertEquals((it ushr 24) and 0xff, 255)
+        }
+    }
 }

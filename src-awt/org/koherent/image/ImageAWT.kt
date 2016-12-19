@@ -33,3 +33,16 @@ fun grayImage(from: BufferedImage): Image<Byte> {
     return rgbaImage(from).map { ((it.grayInt * it.alphaInt) / 255).toByte() }
 }
 
+fun Image<RGBA<Byte>>.toBufferedImage(): BufferedImage {
+    return BufferedImage(width,  height, BufferedImage.TYPE_4BYTE_ABGR).apply {
+        val bytes = (raster.dataBuffer as DataBufferByte).data
+        pixels.forEachIndexed { pixelIndex, rgba ->
+            val i = pixelIndex * 4
+            bytes[i] = rgba.alpha
+            bytes[i + 1] = rgba.blue
+            bytes[i + 2] = rgba.green
+            bytes[i + 3] = rgba.red
+        }
+    }
+}
+
