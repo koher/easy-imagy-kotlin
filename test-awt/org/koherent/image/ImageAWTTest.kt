@@ -106,5 +106,17 @@ class ImageAWTTest {
             assertEquals(bufferedImage.raster.getSample(1, 1, 2), 254)
             assertEquals(bufferedImage.raster.getSample(1, 1, 3), 255)
         }
+        run { // Byte
+            val image = Image<Byte>(2, 2, arrayOf<Byte>(
+                    0, 127, -128, -1
+            ))
+
+            val bufferedImage = image.toBufferedImage()
+
+            assertEquals(bufferedImage.raster.getSample(0, 0, 0), 0)
+            assertEquals(bufferedImage.raster.getSample(1, 0, 0), 127)
+            assertEquals(bufferedImage.raster.getSample(0, 1, 0), 128)
+            assertEquals(bufferedImage.raster.getSample(1, 1, 0), 255)
+        }
     }
 }

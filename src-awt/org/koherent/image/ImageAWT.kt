@@ -1,6 +1,8 @@
 package org.koherent.image
 
 import java.awt.image.BufferedImage
+import org.koherent.image.ToBufferedImageType.*
+
 import java.awt.image.DataBufferByte
 
 fun rgbaImage(from: BufferedImage): Image<RGBA<Byte>> {
@@ -33,7 +35,12 @@ fun grayImage(from: BufferedImage): Image<Byte> {
     return rgbaImage(from).map { ((it.grayInt * it.alphaInt) / 255).toByte() }
 }
 
-fun Image<RGBA<Byte>>.toBufferedImage(): BufferedImage {
+sealed class ToBufferedImageType {
+    object B4 : ToBufferedImageType()
+    object B : ToBufferedImageType()
+}
+
+fun Image<RGBA<Byte>>.toBufferedImage(type: B4 = B4): BufferedImage {
     return BufferedImage(width,  height, BufferedImage.TYPE_4BYTE_ABGR).apply {
         val bytes = (raster.dataBuffer as DataBufferByte).data
         pixels.forEachIndexed { pixelIndex, rgba ->
@@ -46,3 +53,11 @@ fun Image<RGBA<Byte>>.toBufferedImage(): BufferedImage {
     }
 }
 
+fun Image<Byte>.toBufferedImage(type: B = B): BufferedImage {
+    return BufferedImage(width,  height, BufferedImage.TYPE_BYTE_GRAY).apply {
+        val bytes = (raster.dataBuffer as DataBufferByte).data
+        pixels.forEachIndexed { i, byte ->
+            bytes[i] = byte
+        }
+    }
+}
