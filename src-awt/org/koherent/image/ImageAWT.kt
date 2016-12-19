@@ -29,4 +29,7 @@ fun rgbaImage(from: BufferedImage): Image<RGBA<Byte>> {
     return Image(from.width, from.height, pixels.toTypedArray())
 }
 
+fun grayImage(from: BufferedImage): Image<Byte> {
+    return rgbaImage(from).map { ((it.grayInt * it.alphaInt) / 255).toByte() }
+}
 
