@@ -42,7 +42,7 @@ class Image<Pixel>(val width: Int, val height: Int, val pixels: Array<Pixel>) : 
     fun pixel(x: Int, y: Int, extrapolation: Extrapolation<Pixel>): Pixel {
         return pixel(x, y) ?: when (extrapolation) {
             is Extrapolation.Constant -> extrapolation.value
-            is Extrapolation.Replicate -> this[clamp(x, 0, width), clamp(y, 0, height)]
+            is Extrapolation.Replicate -> this[clamp(x, 0, width - 1), clamp(y, 0, height - 1)]
         }
     }
 
@@ -81,6 +81,61 @@ inline fun <Pixel, reified T> Image<Pixel>.map(transform: (Pixel) -> T): Image<T
 inline fun <Pixel> Image<Pixel>.update(transform: (Pixel) -> Pixel) {
     for (i in 0..size) {
         pixels[i] = transform(pixels[i])
+    }
+}
+
+inline fun <Pixel, T, reified R> Image<Pixel>.scaled(width: Int, height: Int, interpolation: Interpolation, extrapolation: Extrapolation<Pixel>, multiply: (Pixel, Double) -> T, add: (T, T) -> T, convert: (T) -> R): Image<R> {
+    val oldWidth = this.width.toDouble()
+    val oldHeight = this.height.toDouble()
+    val newWidth = width.toDouble()
+    val newHeight = height.toDouble()
+
+    return when (interpolation) {
+        is Interpolation.NearestNeighbor -> {
+            throw UnsupportedOperationException("Unimplemented yet.")
+        }
+        is Interpolation.Bilinear -> {
+            val pixels = mutableListOf<R>()
+
+            for (y in 0 until height) {
+                val oldY = (y + 0.5) * oldHeight / newHeight - 0.5
+                val oldYInteger = Math.floor(oldY)
+                val wy1 = oldY - oldYInteger
+                val wy0 = 1.0 - wy1
+                val y0 = oldYInteger.toInt()
+                val y1 = y0 + 1
+
+                for (x in 0 until width) {
+                    val oldX = (x + 0.5) * oldWidth / newWidth - 0.5
+                    val oldXInteger = Math.floor(oldX)
+                    val wx1 = oldX - oldXInteger
+                    val wx0 = 1.0 - wx1
+                    val x0 = oldXInteger.toInt()
+                    val x1 = x0 + 1
+
+                    val w00 = wx0 * wy0
+                    val w10 = wx1 * wy0
+                    val w01 = wx0 * wy1
+                    val w11 = wx1 * wy1
+
+                    val p00 = pixel(x0, y0, extrapolation)
+                    val p10 = pixel(x1, y0, extrapolation)
+                    val p01 = pixel(x0, y1, extrapolation)
+                    val p11 = pixel(x1, y1, extrapolation)
+
+                    val pixel = convert(add(
+                            add(multiply(p00, w00), multiply(p10, w10)),
+                            add(multiply(p01, w01), multiply(p11, w11))
+                    ))
+                    pixels.add(pixel)
+                }
+            }
+
+            Image(width, height, pixels.toTypedArray())
+        }
+        is Interpolation.Bicubic -> {
+            throw UnsupportedOperationException("Unimplemented yet.")
+        }
     }
 }
 

@@ -5,6 +5,54 @@ sealed class ParameterType {
     object Byte : ParameterType()
 }
 
+@JvmName("scaledImageOfByte") fun Image<Byte>.scaled(width: Int, height: Int, interpolation: Interpolation, extrapolation: Extrapolation<Byte> = Extrapolation.Replicate): Image<Byte> {
+    return scaled<Byte, Double, Byte>(
+            width,
+            height,
+            interpolation,
+            extrapolation,
+            { a, b -> (a.toInt() and 0xff) * b },
+            { a, b -> a + b },
+            { it.toByte() }
+    )
+}
+
+@JvmName("scaledImageOfInt") fun Image<Int>.scaled(width: Int, height: Int, interpolation: Interpolation, extrapolation: Extrapolation<Int> = Extrapolation.Replicate): Image<Int> {
+    return scaled<Int, Double, Int>(
+            width,
+            height,
+            interpolation,
+            extrapolation,
+            { a, b -> a * b },
+            { a, b -> a + b },
+            { it.toInt() }
+    )
+}
+
+@JvmName("scaledImageOfFloat") fun Image<Float>.scaled(width: Int, height: Int, interpolation: Interpolation, extrapolation: Extrapolation<Float> = Extrapolation.Replicate): Image<Float> {
+    return scaled<Float, Double, Float>(
+            width,
+            height,
+            interpolation,
+            extrapolation,
+            { a, b -> a * b },
+            { a, b -> a + b },
+            { it.toFloat() }
+    )
+}
+
+@JvmName("scaledImageOfDouble") fun Image<Double>.scaled(width: Int, height: Int, interpolation: Interpolation, extrapolation: Extrapolation<Double> = Extrapolation.Replicate): Image<Double> {
+    return scaled<Double, Double, Double>(
+            width,
+            height,
+            interpolation,
+            extrapolation,
+            { a, b -> a * b },
+            { a, b -> a + b },
+            { it }
+    )
+}
+
 @JvmName("convolutedFromByteViaIntToInt") fun Image<Byte>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<Byte>): Image<Int> {
     return convoluted<Byte, Int, Int, Int>(
             kernel,
