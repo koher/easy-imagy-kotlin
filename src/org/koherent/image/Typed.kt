@@ -1,34 +1,11 @@
 package org.koherent.image
 
-import org.koherent.image.ConvolutionType.*
-
 sealed class ParameterType {
     object RGBAByte : ParameterType()
     object Byte : ParameterType()
 }
 
-sealed class ConvolutionType<I, W, O> {
-    object BII : ConvolutionType<Byte, Int, Int>()
-    object BFB : ConvolutionType<Byte, Float, Byte>()
-    object BDB : ConvolutionType<Byte, Double, Byte>()
-    object III : ConvolutionType<Int, Int, Int>()
-    object IFI : ConvolutionType<Int, Float, Int>()
-    object IDI : ConvolutionType<Int, Double, Int>()
-    object FFF : ConvolutionType<Float, Float, Float>()
-    object FDF : ConvolutionType<Float, Double, Float>()
-    object DDD : ConvolutionType<Double, Double, Double>()
-    object B4II4 : ConvolutionType<RGBA<Byte>, Int, RGBA<Int>>()
-    object B4FB4 : ConvolutionType<RGBA<Byte>, Float, RGBA<Byte>>()
-    object B4DB4 : ConvolutionType<RGBA<Byte>, Double, RGBA<Byte>>()
-    object I4II4 : ConvolutionType<RGBA<Int>, Int, RGBA<Int>>()
-    object I4FI4 : ConvolutionType<RGBA<Int>, Float, RGBA<Int>>()
-    object I4DI4 : ConvolutionType<RGBA<Int>, Double, RGBA<Int>>()
-    object F4FF4 : ConvolutionType<RGBA<Float>, Float, RGBA<Float>>()
-    object F4DF4 : ConvolutionType<RGBA<Float>, Double, RGBA<Float>>()
-    object D4DD4 : ConvolutionType<RGBA<Double>, Double, RGBA<Double>>()
-}
-
-fun Image<Byte>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<Byte>, type: BII = BII): Image<Int> {
+@JvmName("convolutedFromByteViaIntToInt") fun Image<Byte>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<Byte>): Image<Int> {
     return convoluted<Byte, Int, Int, Int>(
             kernel,
             extrapolation,
@@ -39,7 +16,7 @@ fun Image<Byte>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<Byte
     )
 }
 
-fun Image<Byte>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<Byte>, typed: BFB = BFB): Image<Byte> {
+@JvmName("convolutedFromByteViaFloatToByte") fun Image<Byte>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<Byte>): Image<Byte> {
     return convoluted<Byte, Float, Float, Byte>(
             kernel,
             extrapolation,
@@ -50,7 +27,7 @@ fun Image<Byte>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<By
     )
 }
 
-fun Image<Byte>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<Byte>, type: BDB = BDB): Image<Byte> {
+@JvmName("convolutedFromByteViaDoubleToByte") fun Image<Byte>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<Byte>): Image<Byte> {
     return convoluted<Byte, Double, Double, Byte>(
             kernel,
             extrapolation,
@@ -61,7 +38,7 @@ fun Image<Byte>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<B
     )
 }
 
-fun Image<Int>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<Int>, type: III = III): Image<Int> {
+@JvmName("convolutedFromIntViaIntToInt") fun Image<Int>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<Int>): Image<Int> {
     return convoluted<Int, Int, Int, Int>(
             kernel,
             extrapolation,
@@ -72,7 +49,7 @@ fun Image<Int>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<Int>,
     )
 }
 
-fun Image<Int>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<Int>, type: IFI = IFI): Image<Int> {
+@JvmName("convolutedFromIntViaFloatToInt") fun Image<Int>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<Int>): Image<Int> {
     return convoluted<Int, Float, Float, Int>(
             kernel,
             extrapolation,
@@ -83,7 +60,7 @@ fun Image<Int>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<Int
     )
 }
 
-fun Image<Int>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<Int>, type: IDI = IDI): Image<Int> {
+@JvmName("convolutedFromIntViaDoubleToInt") fun Image<Int>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<Int>): Image<Int> {
     return convoluted<Int, Double, Double, Int>(
             kernel,
             extrapolation,
@@ -94,7 +71,7 @@ fun Image<Int>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<In
     )
 }
 
-fun Image<Float>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<Float>, type: FFF = FFF): Image<Float> {
+@JvmName("convolutedFromFloatViaFloatToFloat") fun Image<Float>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<Float>): Image<Float> {
     return convoluted<Float, Float, Float, Float>(
             kernel,
             extrapolation,
@@ -105,7 +82,7 @@ fun Image<Float>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<F
     )
 }
 
-fun Image<Float>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<Float>, type: FDF = FDF): Image<Float> {
+@JvmName("convolutedFromFloatViaDoubleToFloat") fun Image<Float>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<Float>): Image<Float> {
     return convoluted<Float, Double, Double, Float>(
             kernel,
             extrapolation,
@@ -116,7 +93,7 @@ fun Image<Float>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<
     )
 }
 
-fun Image<Double>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<Double>, type: DDD = DDD): Image<Double> {
+@JvmName("convolutedFromDoubleViaDoubleToDouble") fun Image<Double>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<Double>): Image<Double> {
     return convoluted<Double, Double, Double, Double>(
             kernel,
             extrapolation,
@@ -127,7 +104,7 @@ fun Image<Double>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation
     )
 }
 
-fun Image<RGBA<Byte>>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<RGBA<Byte>>, type: B4II4 = B4II4): Image<RGBA<Int>> {
+@JvmName("convolutedFromRGBAByteViaIntToRGBAInt") fun Image<RGBA<Byte>>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<RGBA<Byte>>): Image<RGBA<Int>> {
     return convoluted<RGBA<Byte>, Int, RGBA<Int>, RGBA<Int>>(
             kernel,
             extrapolation,
@@ -138,7 +115,7 @@ fun Image<RGBA<Byte>>.convoluted(kernel: Image<Int>, extrapolation: Extrapolatio
     )
 }
 
-fun Image<RGBA<Byte>>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<RGBA<Byte>>, type: B4FB4 = B4FB4): Image<RGBA<Byte>> {
+@JvmName("convolutedFromRGBABViaFloatToRGBAByte") fun Image<RGBA<Byte>>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<RGBA<Byte>>): Image<RGBA<Byte>> {
     return convoluted<RGBA<Byte>, Float, RGBA<Float>, RGBA<Byte>>(
             kernel,
             extrapolation,
@@ -149,7 +126,7 @@ fun Image<RGBA<Byte>>.convoluted(kernel: Image<Float>, extrapolation: Extrapolat
     )
 }
 
-fun Image<RGBA<Byte>>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<RGBA<Byte>>, type: B4DB4 = B4DB4): Image<RGBA<Byte>> {
+@JvmName("convolutedFromRGBAByteViaDoubleToRGBAByte") fun Image<RGBA<Byte>>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<RGBA<Byte>>): Image<RGBA<Byte>> {
     return convoluted<RGBA<Byte>, Double, RGBA<Double>, RGBA<Byte>>(
             kernel,
             extrapolation,
@@ -160,7 +137,7 @@ fun Image<RGBA<Byte>>.convoluted(kernel: Image<Double>, extrapolation: Extrapola
     )
 }
 
-fun Image<RGBA<Int>>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<RGBA<Int>>, type: I4II4 = I4II4): Image<RGBA<Int>> {
+@JvmName("convolutedFromRGBAIntViaIntToRGBAInt") fun Image<RGBA<Int>>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation<RGBA<Int>>): Image<RGBA<Int>> {
     return convoluted<RGBA<Int>, Int, RGBA<Int>, RGBA<Int>>(
             kernel,
             extrapolation,
@@ -171,7 +148,7 @@ fun Image<RGBA<Int>>.convoluted(kernel: Image<Int>, extrapolation: Extrapolation
     )
 }
 
-fun Image<RGBA<Int>>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<RGBA<Int>>, type: I4FI4 = I4FI4): Image<RGBA<Int>> {
+@JvmName("convolutedFromRGBAIntViaFloatToRGBAInt") fun Image<RGBA<Int>>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<RGBA<Int>>): Image<RGBA<Int>> {
     return convoluted<RGBA<Int>, Float, RGBA<Float>, RGBA<Int>>(
             kernel,
             extrapolation,
@@ -182,7 +159,7 @@ fun Image<RGBA<Int>>.convoluted(kernel: Image<Float>, extrapolation: Extrapolati
     )
 }
 
-fun Image<RGBA<Int>>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<RGBA<Int>>, type: I4DI4 = I4DI4): Image<RGBA<Int>> {
+@JvmName("convolutedFromRGBAIntViaDoubleToRGBAInt") fun Image<RGBA<Int>>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<RGBA<Int>>): Image<RGBA<Int>> {
     return convoluted<RGBA<Int>, Double, RGBA<Double>, RGBA<Int>>(
             kernel,
             extrapolation,
@@ -193,7 +170,7 @@ fun Image<RGBA<Int>>.convoluted(kernel: Image<Double>, extrapolation: Extrapolat
     )
 }
 
-fun Image<RGBA<Float>>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<RGBA<Float>>, type: F4FF4 = F4FF4): Image<RGBA<Float>> {
+@JvmName("convolutedFromRGBAFloatViaFloatToRGBAFloat") fun Image<RGBA<Float>>.convoluted(kernel: Image<Float>, extrapolation: Extrapolation<RGBA<Float>>): Image<RGBA<Float>> {
     return convoluted<RGBA<Float>, Float, RGBA<Float>, RGBA<Float>>(
             kernel,
             extrapolation,
@@ -204,7 +181,7 @@ fun Image<RGBA<Float>>.convoluted(kernel: Image<Float>, extrapolation: Extrapola
     )
 }
 
-fun Image<RGBA<Float>>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<RGBA<Float>>, type: F4DF4 = F4DF4): Image<RGBA<Float>> {
+@JvmName("convolutedFromRGBAFloatViaDoubleToRGBAFloat") fun Image<RGBA<Float>>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<RGBA<Float>>): Image<RGBA<Float>> {
     return convoluted<RGBA<Float>, Double, RGBA<Double>, RGBA<Float>>(
             kernel,
             extrapolation,
@@ -215,7 +192,7 @@ fun Image<RGBA<Float>>.convoluted(kernel: Image<Double>, extrapolation: Extrapol
     )
 }
 
-fun Image<RGBA<Double>>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<RGBA<Double>>, type: D4DD4 = D4DD4): Image<RGBA<Double>> {
+@JvmName("convolutedFromRGBADoubleViaDoubleToRGBADouble") fun Image<RGBA<Double>>.convoluted(kernel: Image<Double>, extrapolation: Extrapolation<RGBA<Double>>): Image<RGBA<Double>> {
     return convoluted<RGBA<Double>, Double, RGBA<Double>, RGBA<Double>>(
             kernel,
             extrapolation,

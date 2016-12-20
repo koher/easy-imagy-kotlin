@@ -38,7 +38,7 @@ fun BufferedImage.toEasyImage(type: ParameterType.Byte = ParameterType.Byte): Im
     return toEasyImage(ParameterType.RGBAByte).map { ((it.grayInt * it.alphaInt) / 255).toByte() }
 }
 
-fun Image<RGBA<Byte>>.toBufferedImage(type: ParameterType.RGBAByte = ParameterType.RGBAByte): BufferedImage {
+@JvmName("toBufferedImageFromImageOfRGBAByte") fun Image<RGBA<Byte>>.toBufferedImage(): BufferedImage {
     return BufferedImage(width,  height, BufferedImage.TYPE_4BYTE_ABGR).apply {
         val bytes = (raster.dataBuffer as DataBufferByte).data
         pixels.forEachIndexed { pixelIndex, rgba ->
@@ -51,7 +51,7 @@ fun Image<RGBA<Byte>>.toBufferedImage(type: ParameterType.RGBAByte = ParameterTy
     }
 }
 
-fun Image<Byte>.toBufferedImage(type: ParameterType.Byte = ParameterType.Byte): BufferedImage {
+@JvmName("toBufferedImageFromImageOfByte") fun Image<Byte>.toBufferedImage(): BufferedImage {
     return BufferedImage(width,  height, BufferedImage.TYPE_BYTE_GRAY).apply {
         val bytes = (raster.dataBuffer as DataBufferByte).data
         pixels.forEachIndexed { i, byte ->
