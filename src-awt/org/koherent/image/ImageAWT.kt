@@ -1,14 +1,17 @@
 package org.koherent.image
 
 import java.awt.image.BufferedImage
-import org.koherent.image.ToBufferedImageType.*
 
 import java.awt.image.DataBufferByte
 
 fun rgbaImage(from: BufferedImage): Image<RGBA<Byte>> {
     when (from.type) {
         BufferedImage.TYPE_4BYTE_ABGR -> {}
-        else -> throw IllegalArgumentException("Unsupported type: ${from.type}")
+        else -> {
+            val converted = BufferedImage(from.width, from.height, BufferedImage.TYPE_4BYTE_ABGR)
+            converted.graphics.drawImage(from, 0, 0, null)
+            return rgbaImage(converted)
+        }
     }
 
     val bytes = (from.raster.dataBuffer as DataBufferByte).data
@@ -35,12 +38,7 @@ fun grayImage(from: BufferedImage): Image<Byte> {
     return rgbaImage(from).map { ((it.grayInt * it.alphaInt) / 255).toByte() }
 }
 
-sealed class ToBufferedImageType {
-    object B4 : ToBufferedImageType()
-    object B : ToBufferedImageType()
-}
-
-fun Image<RGBA<Byte>>.toBufferedImage(type: B4 = B4): BufferedImage {
+fun Image<RGBA<Byte>>.toBufferedImage(type: ParameterType.RGBAByte = ParameterType.RGBAByte): BufferedImage {
     return BufferedImage(width,  height, BufferedImage.TYPE_4BYTE_ABGR).apply {
         val bytes = (raster.dataBuffer as DataBufferByte).data
         pixels.forEachIndexed { pixelIndex, rgba ->
@@ -53,7 +51,7 @@ fun Image<RGBA<Byte>>.toBufferedImage(type: B4 = B4): BufferedImage {
     }
 }
 
-fun Image<Byte>.toBufferedImage(type: B = B): BufferedImage {
+fun Image<Byte>.toBufferedImage(type: ParameterType.Byte = ParameterType.Byte): BufferedImage {
     return BufferedImage(width,  height, BufferedImage.TYPE_BYTE_GRAY).apply {
         val bytes = (raster.dataBuffer as DataBufferByte).data
         pixels.forEachIndexed { i, byte ->
