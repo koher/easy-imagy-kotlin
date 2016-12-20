@@ -4,17 +4,17 @@ import java.awt.image.BufferedImage
 
 import java.awt.image.DataBufferByte
 
-fun rgbaImage(from: BufferedImage): Image<RGBA<Byte>> {
-    when (from.type) {
+fun BufferedImage.toEasyImage(type: ParameterType.RGBAByte = ParameterType.RGBAByte): Image<RGBA<Byte>> {
+    when (this.type) {
         BufferedImage.TYPE_4BYTE_ABGR -> {}
         else -> {
-            val converted = BufferedImage(from.width, from.height, BufferedImage.TYPE_4BYTE_ABGR)
-            converted.graphics.drawImage(from, 0, 0, null)
-            return rgbaImage(converted)
+            val converted = BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR)
+            converted.graphics.drawImage(this, 0, 0, null)
+            return converted.toEasyImage(ParameterType.RGBAByte)
         }
     }
 
-    val bytes = (from.raster.dataBuffer as DataBufferByte).data
+    val bytes = (raster.dataBuffer as DataBufferByte).data
     val pixels: MutableList<RGBA<Byte>> = mutableListOf()
     bytes.forEachIndexed { i, value ->
         val channel = i % 4
@@ -31,11 +31,11 @@ fun rgbaImage(from: BufferedImage): Image<RGBA<Byte>> {
         }
     }
 
-    return Image(from.width, from.height, pixels.toTypedArray())
+    return Image(width, height, pixels.toTypedArray())
 }
 
-fun grayImage(from: BufferedImage): Image<Byte> {
-    return rgbaImage(from).map { ((it.grayInt * it.alphaInt) / 255).toByte() }
+fun BufferedImage.toEasyImage(type: ParameterType.Byte = ParameterType.Byte): Image<Byte> {
+    return toEasyImage(ParameterType.RGBAByte).map { ((it.grayInt * it.alphaInt) / 255).toByte() }
 }
 
 fun Image<RGBA<Byte>>.toBufferedImage(type: ParameterType.RGBAByte = ParameterType.RGBAByte): BufferedImage {

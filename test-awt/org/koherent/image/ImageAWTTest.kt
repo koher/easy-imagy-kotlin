@@ -9,7 +9,7 @@ class ImageAWTTest {
     @Test
     fun testRgbaImage() {
         run {
-            val image = rgbaImage(ImageIO.read(File("res/test-2x1.png")))
+            val image = ImageIO.read(File("res/test-2x1.png")).toEasyImage(ParameterType.RGBAByte)
             assertEquals(image.width, 2)
             assertEquals(image.height, 1)
 
@@ -25,7 +25,7 @@ class ImageAWTTest {
         }
 
         run {
-            val image = rgbaImage(ImageIO.read(File("res/test-2x2.png")))
+            val image = ImageIO.read(File("res/test-2x2.png")).toEasyImage(ParameterType.RGBAByte)
             assertEquals(image.width, 2)
             assertEquals(image.height, 2)
 
@@ -54,7 +54,7 @@ class ImageAWTTest {
     @Test
     fun testGrayImage() {
         run {
-            val image = grayImage(ImageIO.read(File("res/test-2x1.png")))
+            val image = ImageIO.read(File("res/test-2x1.png")).toEasyImage(ParameterType.Byte)
             assertEquals(image.width, 2)
             assertEquals(image.height, 1)
 
@@ -63,7 +63,7 @@ class ImageAWTTest {
         }
 
         run {
-            val image = grayImage(ImageIO.read(File("res/test-2x2.png")))
+            val image = ImageIO.read(File("res/test-2x2.png")).toEasyImage(ParameterType.Byte)
             assertEquals(image.width, 2)
             assertEquals(image.height, 2)
 
