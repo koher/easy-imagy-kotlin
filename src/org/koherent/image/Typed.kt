@@ -2,6 +2,11 @@ package org.koherent.image
 
 import org.koherent.image.ConvolutionType.*
 
+sealed class ParameterType {
+    object RGBAByte : ParameterType()
+    object Byte : ParameterType()
+}
+
 sealed class ConvolutionType<I, W, O> {
     object BII : ConvolutionType<Byte, Int, Int>()
     object BFB : ConvolutionType<Byte, Float, Byte>()
